@@ -259,7 +259,7 @@ PyMODINIT_FUNC initSUNXI_GPIO(void) {
     PyModule_AddObject(module, "PB16", Py_BuildValue("i", PB16));
     PyModule_AddObject(module, "PB17", Py_BuildValue("i", PB17));
     PyModule_AddObject(module, "PB18", Py_BuildValue("i", PB18));
-    PyModule_AddObject(module, "PB19", Py_BuildValue("i", PB20));
+    PyModule_AddObject(module, "PB19", Py_BuildValue("i", PB19));
 
     PyModule_AddObject(module, "PC19", Py_BuildValue("i", PC19));
     PyModule_AddObject(module, "PC20", Py_BuildValue("i", PC20));
