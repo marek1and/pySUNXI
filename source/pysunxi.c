@@ -19,10 +19,8 @@
  * MA 02110-1301, USA.
  */
 
-
 #include "Python.h"
 #include "gpio_lib.h"
-
 
 static PyObject *SetupException;
 static PyObject *OutputException;
@@ -33,39 +31,59 @@ static PyObject *per;
 static PyObject *high;
 static PyObject *low;
 
-#define PD0    SUNXI_GPD(0)
-#define PD1    SUNXI_GPD(1)
-#define PD2    SUNXI_GPD(2)
-#define PD3    SUNXI_GPD(3)
-#define PD4    SUNXI_GPD(4)
-#define PD5    SUNXI_GPD(5)
-#define PD6    SUNXI_GPD(6)
-#define PD7    SUNXI_GPD(7)
-#define PD8    SUNXI_GPD(8)
-#define PD9    SUNXI_GPD(9)
-#define PD10    SUNXI_GPD(10)
-#define PD11    SUNXI_GPD(11)
-#define PD12    SUNXI_GPD(12)
-#define PD13    SUNXI_GPD(13)
-#define PD14    SUNXI_GPD(14)
-#define PD15    SUNXI_GPD(15)
-#define PD16    SUNXI_GPD(16)
-#define PD17    SUNXI_GPD(17)
-#define PD18    SUNXI_GPD(18)
-#define PD19    SUNXI_GPD(19)
-#define PD20    SUNXI_GPD(20)
-#define PD21    SUNXI_GPD(21)
-#define PD22    SUNXI_GPD(22)
-#define PD23    SUNXI_GPD(23)
-#define PD24    SUNXI_GPD(24)
-#define PD25    SUNXI_GPD(25)
-#define PD26    SUNXI_GPD(26)
-#define PD27    SUNXI_GPD(27)
+/* Port Bank B */
+#define PB2     SUNXI_GPB(2)
+#define PB3     SUNXI_GPB(3)
+#define PB4     SUNXI_GPB(4)
+#define PB14    SUNXI_GPB(14)
+#define PB15    SUNXI_GPB(15)
+#define PB16    SUNXI_GPB(16)
+#define PB17    SUNXI_GPB(17)
+#define PB18    SUNXI_GPB(18)
+#define PB19    SUNXI_GPB(19)
 
-#define MISO    SUNXI_GPE(3)
-#define MOSI    SUNXI_GPE(2)
-#define SCK     SUNXI_GPE(1)
-#define CS      SUNXI_GPE(0)
+/* Port Bank C */
+#define PC19    SUNXI_GPC(19)
+#define PC20    SUNXI_GPC(20)
+#define PC21    SUNXI_GPC(21)
+#define PC22    SUNXI_GPC(22)
+
+/* Port Bank G */
+#define PG0    SUNXI_GPG(0)
+#define PG1    SUNXI_GPG(1)
+#define PG2    SUNXI_GPG(2)
+#define PG3    SUNXI_GPG(3)
+#define PG4    SUNXI_GPG(4)
+#define PG5    SUNXI_GPG(5)
+#define PG6    SUNXI_GPG(6)
+#define PG7    SUNXI_GPG(7)
+#define PG8    SUNXI_GPG(8)
+#define PG9    SUNXI_GPG(9)
+#define PG10   SUNXI_GPG(10)
+#define PG11   SUNXI_GPG(11)
+
+/* Port Bank I */
+#define PI3     SUNXI_GPI(3)
+#define PI14    SUNXI_GPI(14)
+#define PI15    SUNXI_GPI(15)
+#define PI20    SUNXI_GPI(20)
+#define PI21    SUNXI_GPI(21)
+
+/* Cubietruck LEDS */
+#define PH21         SUNXI_GPH(21)  /* blue */
+#define PH20         SUNXI_GPH(20)  /* orange */
+#define PH11         SUNXI_GPH(11)  /* white */
+#define PH07         SUNXI_GPH(7)   /* green */
+#define LED_BLUE     SUNXI_GPH(21)  /* blue */
+#define LED_ORANGE   SUNXI_GPH(20)  /* orange */
+#define LED_WHITE    SUNXI_GPH(11)  /* white */
+#define LED_GREEN    SUNXI_GPH(7)   /* green */
+
+/* Cubietruck SPI on Port Bank B - Pins 9-12 on CN8 Connector */
+#define MISO    SUNXI_GPB(17)
+#define MOSI    SUNXI_GPB(16)
+#define SCK     SUNXI_GPB(15)
+#define CS      SUNXI_GPB(14)
 
 static int module_setup(void) {
     int result;
@@ -90,11 +108,6 @@ static int module_setup(void) {
     return SETUP_OK;
 }
 
-
-
-
-
-
 static PyObject* py_output(PyObject* self, PyObject* args) {
     int gpio;
     int value;
@@ -115,6 +128,7 @@ static PyObject* py_output(PyObject* self, PyObject* args) {
 
     Py_RETURN_NONE;
 }
+
 static PyObject* py_input(PyObject* self, PyObject* args) {
     int gpio;
     int result;
@@ -132,7 +146,6 @@ static PyObject* py_input(PyObject* self, PyObject* args) {
         PyErr_SetString(InputException, "Reading pin failed");
         return NULL;
     }
-
 
     return Py_BuildValue("i", result);
 }
@@ -152,10 +165,10 @@ static PyObject* py_setcfg(PyObject* self, PyObject* args) {
 
     Py_RETURN_NONE;
 }
+
 static PyObject* py_getcfg(PyObject* self, PyObject* args) {
     int gpio;
     int result;
-
 
     if(!PyArg_ParseTuple(args, "i", &gpio))
         return NULL;
@@ -165,20 +178,20 @@ static PyObject* py_getcfg(PyObject* self, PyObject* args) {
 
     return Py_BuildValue("i", result);
 
-
 }
+
 static PyObject* py_init(PyObject* self, PyObject* args) {
 
     module_setup();
 
     Py_RETURN_NONE;
 }
+
 static PyObject* py_cleanup(PyObject* self, PyObject* args) {
 
     sunxi_gpio_cleanup();
     Py_RETURN_NONE;
 }
-
 
 PyMethodDef module_methods[] = {
     {"init", py_init, METH_NOARGS, "Initialize module"},
@@ -189,6 +202,7 @@ PyMethodDef module_methods[] = {
     {"input", py_input, METH_VARARGS, "Get input state"},
     {NULL, NULL, 0, NULL}
 };
+
 #if PY_MAJOR_VERSION >= 3
 static struct PyModuleDef module_def = {
     PyModuleDef_HEAD_INIT,
@@ -198,16 +212,15 @@ static struct PyModuleDef module_def = {
     module_methods
 };
 #endif
+
 PyMODINIT_FUNC initSUNXI_GPIO(void) {
     PyObject* module = NULL;
-
 
 #if PY_MAJOR_VERSION >= 3
     module = PyModule_Create(&module_methods);
 #else
     module = Py_InitModule("SUNXI_GPIO", module_methods);
 #endif
-
 
     if(module == NULL)
 #if PY_MAJOR_VERSION >= 3
@@ -216,16 +229,12 @@ PyMODINIT_FUNC initSUNXI_GPIO(void) {
         return;
 #endif
 
-
-
     SetupException = PyErr_NewException("PySUNXI.SetupException", NULL, NULL);
     PyModule_AddObject(module, "SetupException", SetupException);
     OutputException = PyErr_NewException("PySUNXI.OutputException", NULL, NULL);
     PyModule_AddObject(module, "OutputException", OutputException);
     InputException = PyErr_NewException("PySUNXI.InputException", NULL, NULL);
     PyModule_AddObject(module, "InputException", InputException);
-
-
 
     high = Py_BuildValue("i", HIGH);
     PyModule_AddObject(module, "HIGH", high);
@@ -242,18 +251,48 @@ PyMODINIT_FUNC initSUNXI_GPIO(void) {
     per = Py_BuildValue("i", PER);
     PyModule_AddObject(module, "PER", per);
 
+    PyModule_AddObject(module, "PB2", Py_BuildValue("i", PB2));
+    PyModule_AddObject(module, "PB3", Py_BuildValue("i", PB3));
+    PyModule_AddObject(module, "PB4", Py_BuildValue("i", PB4));
+    PyModule_AddObject(module, "PB14", Py_BuildValue("i", PB14));
+    PyModule_AddObject(module, "PB15", Py_BuildValue("i", PB15));
+    PyModule_AddObject(module, "PB16", Py_BuildValue("i", PB16));
+    PyModule_AddObject(module, "PB17", Py_BuildValue("i", PB17));
+    PyModule_AddObject(module, "PB18", Py_BuildValue("i", PB18));
+    PyModule_AddObject(module, "PB19", Py_BuildValue("i", PB20));
 
+    PyModule_AddObject(module, "PC19", Py_BuildValue("i", PC19));
+    PyModule_AddObject(module, "PC20", Py_BuildValue("i", PC20));
+    PyModule_AddObject(module, "PC21", Py_BuildValue("i", PC21));
+    PyModule_AddObject(module, "PC22", Py_BuildValue("i", PC22));;
 
-    PyModule_AddObject(module, "PD0", Py_BuildValue("i", PD0));
-    PyModule_AddObject(module, "PD1", Py_BuildValue("i", PD1));
-    PyModule_AddObject(module, "PD2", Py_BuildValue("i", PD2));
-    PyModule_AddObject(module, "PD3", Py_BuildValue("i", PD3));
-    PyModule_AddObject(module, "PD4", Py_BuildValue("i", PD4));
-    PyModule_AddObject(module, "PD5", Py_BuildValue("i", PD5));
-    PyModule_AddObject(module, "PD6", Py_BuildValue("i", PD6));
-    PyModule_AddObject(module, "PD7", Py_BuildValue("i", PD7));
-    PyModule_AddObject(module, "PD8", Py_BuildValue("i", PD8));
-    PyModule_AddObject(module, "PD9", Py_BuildValue("i", PD9));
+    PyModule_AddObject(module, "PG0", Py_BuildValue("i", PG0));
+    PyModule_AddObject(module, "PG1", Py_BuildValue("i", PG1));
+    PyModule_AddObject(module, "PG2", Py_BuildValue("i", PG2));
+    PyModule_AddObject(module, "PG3", Py_BuildValue("i", PG3));
+    PyModule_AddObject(module, "PG4", Py_BuildValue("i", PG4));
+    PyModule_AddObject(module, "PG5", Py_BuildValue("i", PG5));
+    PyModule_AddObject(module, "PG6", Py_BuildValue("i", PG6));
+    PyModule_AddObject(module, "PG7", Py_BuildValue("i", PG7));
+    PyModule_AddObject(module, "PG8", Py_BuildValue("i", PG8));
+    PyModule_AddObject(module, "PG9", Py_BuildValue("i", PG9));
+    PyModule_AddObject(module, "PG10", Py_BuildValue("i", PG10));
+    PyModule_AddObject(module, "PG11", Py_BuildValue("i", PG11));
+
+    PyModule_AddObject(module, "PI3", Py_BuildValue("i", PI3));
+    PyModule_AddObject(module, "PI14", Py_BuildValue("i", PI14));
+    PyModule_AddObject(module, "PI15", Py_BuildValue("i", PI15));
+    PyModule_AddObject(module, "PI20", Py_BuildValue("i", PI20));
+    PyModule_AddObject(module, "PI21", Py_BuildValue("i", PI21));
+    
+    PyModule_AddObject(module, "PH21", Py_BuildValue("i", PH21));
+    PyModule_AddObject(module, "PH20", Py_BuildValue("i", PH20));
+    PyModule_AddObject(module, "PH11", Py_BuildValue("i", PH11));
+    PyModule_AddObject(module, "PH07", Py_BuildValue("i", PH07));
+    PyModule_AddObject(module, "LED_BLUE", Py_BuildValue("i", LED_BLUE));
+    PyModule_AddObject(module, "LED_ORANGE", Py_BuildValue("i", LED_ORANGE));
+    PyModule_AddObject(module, "LED_WHITE", Py_BuildValue("i", LED_WHITE));
+    PyModule_AddObject(module, "LED_GREEN", Py_BuildValue("i", LED_GREEN));
 
     PyModule_AddObject(module, "MISO", Py_BuildValue("i", MISO));
     PyModule_AddObject(module, "MOSI", Py_BuildValue("i", MOSI));
@@ -270,8 +309,4 @@ PyMODINIT_FUNC initSUNXI_GPIO(void) {
         return;
 #endif
     }
-
-
-
 }
-
